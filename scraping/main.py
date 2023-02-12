@@ -95,14 +95,15 @@ def get_answers_and_sources(browser, delay, question) -> dict:
     def _extract():
         target_url = convert_question_to_url(question)
         browser.get(target_url)
-        sleep(5)
+        sleep(10)
         concise_answer = get_concise_answer(browser, delay)
         sleep(0.1)
         click_view_list_btn(browser, delay)
+        sleep(0.1)
         click_view_detailed_btn(browser, delay)
         sleep(3)
         sources = get_sources(browser, delay)
-        sleep(5)
+        sleep(8)
         detailed_answer = get_detailed_answer(browser, delay)
         result = {
             'question': question,
@@ -122,7 +123,7 @@ def get_answers_and_sources(browser, delay, question) -> dict:
 
 
 def main():
-    delay = 10
+    delay = 20
     browser = uc.Chrome()
     # questions = [
     #     'who is the author of harry potter',
@@ -133,10 +134,8 @@ def main():
         reader = csv.reader(f, delimiter=',')
         for row in reader:
             questions.append(row[2])
-        questions = questions[1:]
-        questions = questions[46:]
 
-    output_path = 'results46.jsonl'
+    output_path = 'results_temp.jsonl'
     with open(output_path, 'w') as f:
         for question in tqdm(questions):
             result = get_answers_and_sources(browser, delay, question)
@@ -147,4 +146,28 @@ def main():
 if __name__ == '__main__':
     print('Start...')
     main()
+
+    # with open('results.jsonl', 'r') as f:
+    #     for l in f:
+    #         d = json.loads(l)
+    #         print()
+
+    # qs = []
+    # with open('results_temp.jsonl', 'r') as f:
+    #     for l in f:
+    #         d = json.loads(l)
+    #         a = d['answer']
+    #         q = d['question']
+    #         if len(a.split()) < 10:
+    #             print(q)
+    #             print(a)
+    #             print('-------')
+    #             qs.append(q)
+    #         else:
+    #             pass
+
+    # with open('remaining_questions.txt', 'w') as f:
+    #     for q in qs:
+    #         f.write(q+'\n')
+
     print('Finish')
