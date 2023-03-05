@@ -1,0 +1,4 @@
+dummy:
+  _target_: main.Example
+  attr1: this is attr1
+  attr2: 2.0
