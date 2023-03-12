@@ -35,17 +35,6 @@ for item in items:
     items_dict[item['id']] = item
 
 
-def submit(username_str):
-    username_str = username_str.strip()
-    timestamp = str(datetime.datetime.now()).replace(' ', '_')
-    output_filename = f'annotations__{username_str}__{timestamp}.json'
-    print(f'Save results to {output_filename}')
-    save_json(output_filename, {
-        'meta': data['meta'],
-        'data': items
-    })
-
-
 def compose_sources_html(refs):
     html = ''
     for i, s in enumerate(refs):
@@ -124,7 +113,7 @@ with demo:
             answer1_radio = gr.Radio(['0: Bad', '1: OK', '2: Good'], label='')
             answer1_radio.change(fn=answer1_radio_change, inputs=[answer1_radio, item_id])
             gr.Markdown("""
-                #### Give reasons/comments if you scored 0 or 1 on Answer1. Any other remarks are very welcome too!
+                <h5>Give reasons/comments if you scored 0 or 1 on Answer1. Any other remarks are very welcome too!</h5>
             """)
             answer1_comment = gr.Textbox(placeholder='', label="Feedback on Answer1")
             answer1_comment.change(fn=answer1_comment_change, inputs=[answer1_comment, item_id])
@@ -152,7 +141,30 @@ with demo:
             #     next_btn.click(next_item)
 
     submit_btn = gr.Button(value='Submit')
-    submit_btn.click(submit, inputs=[username])
+
+    with gr.Column(visible=False) as output_col:
+        gr.HTML('<h1>The annotations are submitted, many thanks!</h1>')
+
+
+    def submit(username_str):
+        try:
+            username_str = username_str.strip()
+            timestamp = str(datetime.datetime.now())
+            timestamp = timestamp.replace(' ', '_').replace(':', '-').split('.')[0]
+            output_filename = f'annotations__{username_str}__{timestamp}.json'
+            print(f'Save results to {output_filename}')
+            save_json(output_filename, {
+                'meta': data['meta'],
+                'data': items
+            })
+            return {
+                output_col: gr.update(visible=True)
+            }
+        except Exception as e:
+            print(e)
+
+
+    submit_btn.click(submit, inputs=[username], outputs=[output_col])
 
 if __name__ == '__main__':
     demo.launch()
