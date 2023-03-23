@@ -66,6 +66,7 @@ class GLUEDataModule(LightningDataModule):
         eval_batch_size: int = 32,
         **kwargs,
     ):
+        print('init')
         super().__init__()
         self.model_name_or_path = model_name_or_path
         self.task_name = task_name
@@ -78,6 +79,9 @@ class GLUEDataModule(LightningDataModule):
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path, use_fast=True)
 
     def setup(self, stage: str):
+        # make assignments here (val/train/test split)
+        # called on every process in DDP
+        print('setup', stage)
         self.dataset = datasets.load_dataset("glue", self.task_name)
 
         for split in self.dataset.keys():
@@ -92,6 +96,9 @@ class GLUEDataModule(LightningDataModule):
         self.eval_splits = [x for x in self.dataset.keys() if "validation" in x]
 
     def prepare_data(self):
+        # download, split, etc...
+        # only called on 1 GPU/TPU in distributed
+        print('prepare_data')
         datasets.load_dataset("glue", self.task_name)
         AutoTokenizer.from_pretrained(self.model_name_or_path, use_fast=True)
 
