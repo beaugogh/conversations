@@ -1,0 +1,3 @@
+scikit-learn==1.2.1
+rank-eval==0.1.3
+sentence-transformers==2.2.2
